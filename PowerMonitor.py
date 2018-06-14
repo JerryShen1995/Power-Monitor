@@ -23,6 +23,7 @@ class PowerMonitor:
     power_supply = 'on'
     temperature_mode = 'c'
     temperature = 0
+    reading = 0
     
     def helloworld(self):
         self.con.write('lcd 1 "Hello World"\n'.encode())
@@ -55,11 +56,15 @@ class PowerMonitor:
         self.status = 'not hosting'
         while True:
             data = self.con.readline()
-            if len(data) != 0: 
-                print ( data.decode(), end='')
+            if __debug__:
+                if len(data)==0:
+                    break
             else:
-                print ('done, exiting')
-                break
+                if len(data) != 0: 
+                    print ( data.decode(), end='')
+                else:
+                    print ('done, exiting')
+                    break
 
     def help(self):
         self.con.write('help\n'.encode())
@@ -80,11 +85,14 @@ class PowerMonitor:
         
         while True:
             data = self.con.readline()
-            
-            if len(data) != 0: 
-                print ( data.decode(), end='')
+            if __debug__:
+                if len(data)==0:
+                    break
             else:
-                break
+                if len(data) != 0: 
+                    print ( data.decode(), end='')
+                else:
+                    break
         return self.__convert(x)
 
     def acqmode(self,x):
@@ -110,11 +118,14 @@ class PowerMonitor:
         
         while True:
             data = self.con.readline()
-            
-            if len(data) != 0: 
-                print ( data.decode(), end='')
+            if __debug__:
+                if len(data)==0:
+                    break
             else:
-                break
+                if len(data) != 0: 
+                    print ( data.decode(), end='')
+                else:
+                    break
         return x
 
     def format(self,x):                
@@ -123,11 +134,14 @@ class PowerMonitor:
 
         while True:
             data = self.con.readline()
-            print(data)
-            if len(data) != 0: 
-                print ( data.decode(), end='')
-            else:
-                break
+            if __debug__:
+                if len(data)==0:
+                    break
+            else:            
+                if len(data) != 0: 
+                    print ( data.decode(), end='')
+                else:
+                    break
         return x
 
     def volt(self,x):
@@ -137,11 +151,14 @@ class PowerMonitor:
         
         while True:
             data = self.con.readline()
-            
-            if len(data) != 0: 
-                print ( data.decode(), end='')
+            if __debug__:
+                if len(data)==0:
+                    break
             else:
-                break
+                if len(data) != 0: 
+                    print ( data.decode(), end='')
+                else:
+                    break
         return self.__convert(x,-1)
 
     def freq(self,x):
@@ -151,11 +168,14 @@ class PowerMonitor:
         
         while True:
             data = self.con.readline()
-            
-            if len(data) != 0: 
-                print ( data.decode(), end='')
+            if __debug__:
+                if len(data)==0:
+                    break
             else:
-                break
+                if len(data) != 0: 
+                    print ( data.decode(), end='')
+                else:
+                    break
         return self.__convert(x)
 
     def output(self,x):
@@ -164,11 +184,14 @@ class PowerMonitor:
         
         while True:
             data = self.con.readline()
-            
-            if len(data) != 0: 
-                print ( data.decode(), end='')
+            if __debug__:
+                if len(data)==0:
+                    break
             else:
-                break
+                if len(data) != 0: 
+                    print ( data.decode(), end='')
+                else:
+                    break
         return x
         
 
@@ -178,11 +201,14 @@ class PowerMonitor:
         
         while True:
             data = self.con.readline()
-            
-            if len(data) != 0: 
-                print ( data.decode(), end='')
+            if __debug__:
+                if len(data)==0:
+                    break
             else:
-                break
+                if len(data) != 0: 
+                    print ( data.decode(), end='')
+                else:
+                    break
         return x
 
     def trigdelay(self,x):
@@ -192,11 +218,14 @@ class PowerMonitor:
         
         while True:
             data = self.con.readline()
-            
-            if len(data) != 0: 
-                print ( data.decode(), end='')
+            if __debug__:
+                if len(data)==0:
+                    break
             else:
-                break
+                if len(data) != 0: 
+                    print ( data.decode(), end='')
+                else:
+                    break
         return self.__convert(x,-1)
 
     def currthres(self,x):
@@ -205,11 +234,14 @@ class PowerMonitor:
         
         while True:
             data = self.con.readline()
-            
-            if len(data) != 0: 
-                print ( data.decode(), end='')
+            if __debug__:
+                if len(data)==0:
+                    break
             else:
-                break
+                if len(data) != 0: 
+                    print ( data.decode(), end='')
+                else:
+                    break
 
     def pwrend(self,x):
         pwrend = 'pwrend '+x+'\n'
@@ -217,11 +249,14 @@ class PowerMonitor:
         
         while True:
             data = self.con.readline()
-            
-            if len(data) != 0: 
-                print ( data.decode(), end='')
+            if __debug__:
+                if len(data)==0:
+                    break
             else:
-                break
+                if len(data) != 0: 
+                    print ( data.decode(), end='')
+                else:
+                    break
         return x
 
     def temp(self,x):
@@ -303,24 +338,26 @@ class PowerMonitor:
     def __hextodec(self,x,y):
         d2=x%16
         d1=(x-d2)/16
-        d4=x%16
-        d3=(x-d4)/16
+        d4=y%16
+        d3=(y-d4)/16
         d=d2*256+d3*16+d4
         return d*16**(0-float(d1))
 
     def __hexprocess(self,x):
         result = []
         while True:
+            if len(x)<2:
+                return result
             if x[0]==240 and x[1]==243:
                 x=x[9:]
             if x[0]==240 and x[1]==244:
                 return result
             result.append(self.__hextodec(x[0],x[1]))
             x=x[2:]
-
+    
     def open(self):
         self.htc()
-        self.temperature = self.temp('degc')
+        #self.temperature = self.temp('degc')
         
     def read (self, voltage, samplesPerSecond, samplingTimeInSeconds, startDelayInSeconds):
         self.voltage = self.volt(voltage)
@@ -347,16 +384,28 @@ class PowerMonitor:
         else:
             while True:
                 data = self.con.readline()
-                if len(data) != 0:
+                if self.reading == 0:
+                    if len(data) != 0:
+                        try:
+                            print(data.decode(),end='')
+                        except UnicodeDecodeError:
+                            self.reading = 1
+                            temp = temp + self.__bytetodec(data)
+                    else:
+                        result = self.__hexprocess(temp)
+                        print(len(result))
+                        print('done')
+                        break
+                elif self.reading == 1:
                     try:
-                        print(data.decode(),end='')
+                        stringtemp = data.decode()
+                        if stringtemp.startswith('summary'):
+                            print(data.decode(),end='')
+                            self.reading = 0
+                        else:
+                            temp = temp + self.__bytetodec(data)
                     except UnicodeDecodeError:
                         temp = temp + self.__bytetodec(data)
-                else:
-                    result = self.__hexprocess(temp)
-                    print(len(result))
-                    print('done')
-                    break
         return result
         pass
 
@@ -384,9 +433,13 @@ class PowerMonitor:
 pm = PowerMonitor('/dev/ttyACM0')
 #pm.help()
 pm.form=pm.format('bin_hexa')
-data = pm.read('3.3','1000','10','5')
+data = pm.read('3.3','100000','1','5')
 print ('first 100 results')
 print(data[:100])
+print('max:')
+print(max(data))
+print('min:')
+print(min(data))
 #pm.status_printout()
-#pm.close()
+pm.close()
 #pm.status_printout()
