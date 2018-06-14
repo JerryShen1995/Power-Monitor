@@ -1,0 +1,1 @@
+A power monitor script for ST Nucleo. pyserial module required.
